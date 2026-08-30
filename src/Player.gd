@@ -1,6 +1,8 @@
 class_name Player
 extends Node3D
 
+const SnLScript = preload("res://singleton/SnLData.gd")
+
 @export var player_id: int = 1
 var current_cell: int = 1
 var is_moving: bool = false
@@ -94,8 +96,8 @@ func move_steps(steps: int) -> void:
 	var landing_cell: int = path[-1]
 	
 	# Check if landing cell triggers snake or ladder
-	if SnLData.connections.has(landing_cell):
-		var destination_cell: int = SnLData.connections[landing_cell]
+	if SnLScript.connections.has(landing_cell):
+		var destination_cell: int = SnLScript.connections[landing_cell]
 		var is_ladder: bool = landing_cell < destination_cell
 		
 		# Trigger event callback before animation

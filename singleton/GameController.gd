@@ -37,7 +37,9 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if players.is_empty():
-		_register_players()
+		var found := get_tree().get_nodes_in_group("players")
+		if not found.is_empty():
+			_register_players()
 
 func _register_players() -> void:
 	var found := get_tree().get_nodes_in_group("players")
@@ -45,8 +47,12 @@ func _register_players() -> void:
 		return
 	
 	players.clear()
-	# Sort players by player_id to ensure deterministic turn order
-	found.sort_custom(func(a, b): return a.get("player_id", 0) < b.get("player_id", 0))
+	# Sort players deterministically by player_id
+	found.sort_custom(func(a, b):
+		var id_a: int = a.player_id if "player_id" in a else 0
+		var id_b: int = b.player_id if "player_id" in b else 0
+		return id_a < id_b
+	)
 	
 	for i in range(found.size()):
 		var node = found[i]

@@ -5,6 +5,8 @@ const BOARD_SIZE := 10
 const CELL_SIZE := 2.0
 const BOARD_ORIGIN := Vector3(-9.0, 0.0, -9.0) # Center of cell 1 at bottom-left
 
+const SnLScript = preload("res://singleton/SnLData.gd")
+
 var cells: Array[Vector3] = [] # 1-based world positions (index 0 unused)
 var tiles_container: Node3D
 var objects_container: Node3D
@@ -86,9 +88,9 @@ func create_visual_board() -> void:
 			tile.material_override = mat_start
 		elif idx == 100:
 			tile.material_override = mat_win
-		elif SnLData.is_ladder_base(idx):
+		elif SnLScript.is_ladder_base(idx):
 			tile.material_override = mat_ladder_base
-		elif SnLData.is_snake_head(idx):
+		elif SnLScript.is_snake_head(idx):
 			tile.material_override = mat_snake_head
 		elif (idx % 2 == 0):
 			tile.material_override = mat_light
@@ -174,8 +176,8 @@ func place_snakes_and_ladders() -> void:
 	var ladder_prefab := preload("res://models/LadderModel.tscn")
 	var snake_prefab := preload("res://models/SnakeModel.tscn")
 	
-	for start_cell in SnLData.connections.keys():
-		var end_cell: int = SnLData.connections[start_cell]
+	for start_cell in SnLScript.connections.keys():
+		var end_cell: int = SnLScript.connections[start_cell]
 		var start_pos: Vector3 = cells[start_cell]
 		var end_pos: Vector3 = cells[end_cell]
 		var is_ladder: bool = start_cell < end_cell
