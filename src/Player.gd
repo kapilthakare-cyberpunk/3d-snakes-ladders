@@ -11,6 +11,8 @@ signal move_finished(player_id: int, final_cell: int)
 signal special_triggered(player_id: int, is_ladder: bool, from_cell: int, to_cell: int)
 
 var idle_tween: Tween
+var power_particles: CPUParticles3D
+var power_light: OmniLight3D
 @onready var visuals: Node3D = $Visuals
 
 func _ready() -> void:
@@ -20,9 +22,69 @@ func _ready() -> void:
 func setup_player(p_id: int) -> void:
 	player_id = p_id
 	_build_superhero_miniature()
+	_setup_power_effects()
+
+func _setup_power_effects() -> void:
+	if power_particles:
+		power_particles.queue_free()
+	if power_light:
+		power_light.queue_free()
+	
+	power_particles = CPUParticles3D.new()
+	power_particles.emitting = false
+	power_particles.amount = 28
+	power_particles.lifetime = 0.6
+	power_particles.speed_scale = 1.4
+	power_particles.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	power_particles.emission_sphere_radius = 0.25
+	power_particles.gravity = Vector3(0, -3.0, 0)
+	power_particles.scale_amount_min = 0.08
+	power_particles.scale_amount_max = 0.18
+	
+	var part_mat := StandardMaterial3D.new()
+	part_mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	part_mat.vertex_color_use_as_albedo = true
+	
+	var part_mesh := SphereMesh.new()
+	part_mesh.radius = 0.08
+	part_mesh.height = 0.16
+	part_mesh.material = part_mat
+	power_particles.mesh = part_mesh
+	
+	power_light = OmniLight3D.new()
+	power_light.light_energy = 0.0
+	power_light.omni_range = 3.5
+	
+	match player_id:
+		1:
+			# Iron Man: Jet Booster Flames (Cyan / Orange)
+			power_particles.color = Color(0.2, 0.9, 1.0, 0.95)
+			power_particles.direction = Vector3(0, -1, -0.5)
+			power_particles.spread = 20.0
+			power_particles.initial_velocity_min = 2.0
+			power_particles.initial_velocity_max = 4.0
+			power_light.light_color = Color(0.2, 0.9, 1.0, 1.0)
+		2:
+			# Spider-Man: Web Trails (Crisp White / Silver)
+			power_particles.color = Color(0.98, 0.98, 1.0, 0.9)
+			power_particles.direction = Vector3(0, 0.5, -1)
+			power_particles.spread = 45.0
+			power_particles.initial_velocity_min = 1.0
+			power_particles.initial_velocity_max = 2.5
+			power_light.light_color = Color(0.9, 0.95, 1.0, 1.0)
+		3:
+			# Wonder Woman: Golden Lasso Aura (Radiant Gold)
+			power_particles.color = Color(1.0, 0.85, 0.2, 0.95)
+			power_particles.direction = Vector3(0, 1, 0)
+			power_particles.spread = 180.0
+			power_particles.initial_velocity_min = 1.5
+			power_particles.initial_velocity_max = 3.0
+			power_light.light_color = Color(1.0, 0.85, 0.2, 1.0)
+	
+	add_child(power_particles)
+	add_child(power_light)
 
 func _build_superhero_miniature() -> void:
-	# Clear existing children of Visuals
 	if not visuals:
 		visuals = Node3D.new()
 		visuals.name = "Visuals"
@@ -39,36 +101,29 @@ func _build_superhero_miniature() -> void:
 		_build_wonder_woman()
 
 func _build_iron_man() -> void:
-	# Materials
 	var mat_red := StandardMaterial3D.new()
-	mat_red.albedo_color = Color(0.78, 0.12, 0.15, 1.0) # Metallic Crimson
-	mat_red.metallic = 0.8
-	mat_red.roughness = 0.2
+	mat_red.albedo_color = Color(0.8, 0.1, 0.14, 1.0)
+	mat_red.metallic = 0.85
+	mat_red.roughness = 0.18
 	
 	var mat_gold := StandardMaterial3D.new()
-	mat_gold.albedo_color = Color(0.95, 0.78, 0.18, 1.0) # Metallic Gold
-	mat_gold.metallic = 0.85
-	mat_gold.roughness = 0.18
+	mat_gold.albedo_color = Color(0.98, 0.8, 0.15, 1.0)
+	mat_gold.metallic = 0.9
+	mat_gold.roughness = 0.15
 	
 	var mat_arc := StandardMaterial3D.new()
-	mat_arc.albedo_color = Color(0.2, 0.95, 1.0, 1.0) # Cyan Glowing Arc Reactor
+	mat_arc.albedo_color = Color(0.25, 0.95, 1.0, 1.0)
 	mat_arc.emission_enabled = true
-	mat_arc.emission = Color(0.2, 0.95, 1.0, 1.0)
-	mat_arc.emission_energy_multiplier = 2.0
+	mat_arc.emission = Color(0.25, 0.95, 1.0, 1.0)
+	mat_arc.emission_energy_multiplier = 2.5
 	
-	var mat_eyes := StandardMaterial3D.new()
-	mat_eyes.albedo_color = Color(0.9, 0.98, 1.0, 1.0) # Glowing Eye Slits
-	mat_eyes.emission_enabled = true
-	mat_eyes.emission = Color(0.9, 0.98, 1.0, 1.0)
-	mat_eyes.emission_energy_multiplier = 2.0
-	
-	# Base / Armored Boots
-	var base_mesh := CylinderMesh.new()
-	base_mesh.top_radius = 0.32
-	base_mesh.bottom_radius = 0.38
-	base_mesh.height = 0.12
+	# Boots / Thrusters
+	var boot_mesh := CylinderMesh.new()
+	boot_mesh.top_radius = 0.32
+	boot_mesh.bottom_radius = 0.36
+	boot_mesh.height = 0.12
 	var base_node := MeshInstance3D.new()
-	base_node.mesh = base_mesh
+	base_node.mesh = boot_mesh
 	base_node.material_override = mat_red
 	base_node.position = Vector3(0, 0.06, 0)
 	visuals.add_child(base_node)
@@ -84,7 +139,7 @@ func _build_iron_man() -> void:
 	body_node.position = Vector3(0, 0.32, 0)
 	visuals.add_child(body_node)
 	
-	# Glowing Arc Reactor on Chest
+	# Glowing Arc Reactor
 	var arc_mesh := CylinderMesh.new()
 	arc_mesh.top_radius = 0.08
 	arc_mesh.bottom_radius = 0.08
@@ -96,9 +151,30 @@ func _build_iron_man() -> void:
 	arc_node.rotation_degrees = Vector3(90, 0, 0)
 	visuals.add_child(arc_node)
 	
-	# Shoulder Pauldrons (Gold)
+	# Arms with Repulsor Palms
+	var arm_mesh := CylinderMesh.new()
+	arm_mesh.top_radius = 0.07
+	arm_mesh.bottom_radius = 0.07
+	arm_mesh.height = 0.28
+	for side in [-1.0, 1.0]:
+		var arm := MeshInstance3D.new()
+		arm.mesh = arm_mesh
+		arm.material_override = mat_red
+		arm.position = Vector3(side * 0.34, 0.32, 0.04)
+		arm.rotation_degrees = Vector3(15, 0, side * -12)
+		visuals.add_child(arm)
+		
+		# Glowing Repulsor Palm
+		var palm := MeshInstance3D.new()
+		palm.mesh = arc_mesh
+		palm.material_override = mat_arc
+		palm.position = Vector3(side * 0.34, 0.17, 0.08)
+		palm.scale = Vector3(0.5, 0.5, 0.5)
+		visuals.add_child(palm)
+	
+	# Shoulders (Gold)
 	var pauldron_mesh := SphereMesh.new()
-	pauldron_mesh.radius = 0.1
+	pauldron_mesh.radius = 0.11
 	pauldron_mesh.height = 0.18
 	for side in [-1.0, 1.0]:
 		var p_node := MeshInstance3D.new()
@@ -107,7 +183,7 @@ func _build_iron_man() -> void:
 		p_node.position = Vector3(side * 0.3, 0.44, 0)
 		visuals.add_child(p_node)
 	
-	# Helmet (Red Dome)
+	# Helmet
 	var head_mesh := SphereMesh.new()
 	head_mesh.radius = 0.26
 	head_mesh.height = 0.52
@@ -132,29 +208,28 @@ func _build_iron_man() -> void:
 	for side in [-1.0, 1.0]:
 		var eye := MeshInstance3D.new()
 		eye.mesh = eye_mesh
-		eye.material_override = mat_eyes
+		eye.material_override = mat_arc
 		eye.position = Vector3(side * 0.06, 0.67, 0.27)
 		visuals.add_child(eye)
 
 func _build_spider_man() -> void:
-	# Materials
 	var mat_red := StandardMaterial3D.new()
-	mat_red.albedo_color = Color(0.88, 0.15, 0.18, 1.0) # Comic Spider Red
-	mat_red.roughness = 0.3
+	mat_red.albedo_color = Color(0.9, 0.12, 0.15, 1.0)
+	mat_red.roughness = 0.25
 	
 	var mat_blue := StandardMaterial3D.new()
-	mat_blue.albedo_color = Color(0.12, 0.35, 0.88, 1.0) # Comic Spider Blue
-	mat_blue.roughness = 0.3
+	mat_blue.albedo_color = Color(0.1, 0.32, 0.9, 1.0)
+	mat_blue.roughness = 0.25
 	
 	var mat_black := StandardMaterial3D.new()
-	mat_black.albedo_color = Color(0.05, 0.05, 0.08, 1.0) # Black Webbing / Spider / Eye Rim
-	mat_black.roughness = 0.2
+	mat_black.albedo_color = Color(0.04, 0.04, 0.06, 1.0)
+	mat_black.roughness = 0.15
 	
 	var mat_lens := StandardMaterial3D.new()
-	mat_lens.albedo_color = Color(0.98, 0.98, 1.0, 1.0) # White Mask Lenses
-	mat_lens.roughness = 0.15
+	mat_lens.albedo_color = Color(0.98, 0.98, 1.0, 1.0)
+	mat_lens.roughness = 0.1
 	
-	# Base / Boots (Red)
+	# Boots (Red)
 	var base_mesh := CylinderMesh.new()
 	base_mesh.top_radius = 0.32
 	base_mesh.bottom_radius = 0.38
@@ -165,7 +240,7 @@ func _build_spider_man() -> void:
 	base_node.position = Vector3(0, 0.06, 0)
 	visuals.add_child(base_node)
 	
-	# Lower Torso / Legs (Blue)
+	# Lower Torso (Blue)
 	var lower_mesh := CylinderMesh.new()
 	lower_mesh.top_radius = 0.24
 	lower_mesh.bottom_radius = 0.26
@@ -187,7 +262,7 @@ func _build_spider_man() -> void:
 	body_node.position = Vector3(0, 0.38, 0)
 	visuals.add_child(body_node)
 	
-	# Black Spider Emblem on Chest
+	# Spider Emblem Front
 	var spider_mesh := SphereMesh.new()
 	spider_mesh.radius = 0.06
 	spider_mesh.height = 0.1
@@ -198,7 +273,28 @@ func _build_spider_man() -> void:
 	spider_node.scale = Vector3(1.2, 1.4, 0.3)
 	visuals.add_child(spider_node)
 	
-	# Head / Mask (Red)
+	# Arms with Web-Shooters
+	var arm_mesh := CylinderMesh.new()
+	arm_mesh.top_radius = 0.065
+	arm_mesh.bottom_radius = 0.065
+	arm_mesh.height = 0.28
+	for side in [-1.0, 1.0]:
+		var arm := MeshInstance3D.new()
+		arm.mesh = arm_mesh
+		arm.material_override = mat_red
+		arm.position = Vector3(side * 0.32, 0.32, 0.04)
+		arm.rotation_degrees = Vector3(20, 0, side * -18)
+		visuals.add_child(arm)
+		
+		# Web shooter on wrist
+		var shooter := MeshInstance3D.new()
+		shooter.mesh = BoxMesh.new()
+		(shooter.mesh as BoxMesh).size = Vector3(0.04, 0.04, 0.04)
+		shooter.material_override = mat_black
+		shooter.position = Vector3(side * 0.32, 0.17, 0.08)
+		visuals.add_child(shooter)
+	
+	# Head
 	var head_mesh := SphereMesh.new()
 	head_mesh.radius = 0.26
 	head_mesh.height = 0.52
@@ -208,55 +304,57 @@ func _build_spider_man() -> void:
 	head_node.position = Vector3(0, 0.65, 0)
 	visuals.add_child(head_node)
 	
-	# Iconic Spider-Man Triangular Mask Eyes (Black rim + White lens)
-	var eye_outer_mesh := BoxMesh.new()
-	eye_outer_mesh.size = Vector3(0.12, 0.16, 0.04)
-	var eye_inner_mesh := BoxMesh.new()
-	eye_inner_mesh.size = Vector3(0.09, 0.13, 0.05)
-	
+	# Triangular Mask Eyes
+	var eye_outer := BoxMesh.new()
+	eye_outer.size = Vector3(0.12, 0.16, 0.04)
+	var eye_inner := BoxMesh.new()
+	eye_inner.size = Vector3(0.09, 0.13, 0.05)
 	for side in [-1.0, 1.0]:
 		var outer := MeshInstance3D.new()
-		outer.mesh = eye_outer_mesh
+		outer.mesh = eye_outer
 		outer.material_override = mat_black
 		outer.position = Vector3(side * 0.11, 0.66, 0.24)
 		outer.rotation_degrees = Vector3(0, 0, side * -18.0)
 		visuals.add_child(outer)
 		
 		var inner := MeshInstance3D.new()
-		inner.mesh = eye_inner_mesh
+		inner.mesh = eye_inner
 		inner.material_override = mat_lens
 		inner.position = Vector3(side * 0.11, 0.66, 0.25)
 		inner.rotation_degrees = Vector3(0, 0, side * -18.0)
 		visuals.add_child(inner)
 
 func _build_wonder_woman() -> void:
-	# Materials
 	var mat_red := StandardMaterial3D.new()
-	mat_red.albedo_color = Color(0.85, 0.12, 0.28, 1.0) # Amazonian Crimson Bodice
+	mat_red.albedo_color = Color(0.88, 0.1, 0.28, 1.0)
 	mat_red.roughness = 0.25
 	
 	var mat_blue := StandardMaterial3D.new()
-	mat_blue.albedo_color = Color(0.12, 0.28, 0.75, 1.0) # Royal Blue Skirt/Legs
-	mat_blue.roughness = 0.3
+	mat_blue.albedo_color = Color(0.1, 0.26, 0.8, 1.0)
+	mat_blue.roughness = 0.25
 	
 	var mat_gold := StandardMaterial3D.new()
-	mat_gold.albedo_color = Color(0.98, 0.82, 0.18, 1.0) # Golden Tiara & Armor
-	mat_gold.metallic = 0.85
-	mat_gold.roughness = 0.2
+	mat_gold.albedo_color = Color(0.98, 0.82, 0.15, 1.0)
+	mat_gold.metallic = 0.9
+	mat_gold.roughness = 0.15
+	
+	var mat_silver := StandardMaterial3D.new()
+	mat_silver.albedo_color = Color(0.92, 0.94, 0.98, 1.0) # Silver Bracelets of Submission
+	mat_silver.metallic = 0.95
+	mat_silver.roughness = 0.1
 	
 	var mat_skin := StandardMaterial3D.new()
-	mat_skin.albedo_color = Color(0.98, 0.84, 0.72, 1.0) # Peach Skin
+	mat_skin.albedo_color = Color(0.98, 0.84, 0.72, 1.0)
 	mat_skin.roughness = 0.4
 	
 	var mat_hair := StandardMaterial3D.new()
-	mat_hair.albedo_color = Color(0.1, 0.1, 0.14, 1.0) # Dark Black Hair
+	mat_hair.albedo_color = Color(0.08, 0.08, 0.12, 1.0)
 	mat_hair.roughness = 0.3
 	
 	var mat_star := StandardMaterial3D.new()
-	mat_star.albedo_color = Color(0.95, 0.15, 0.2, 1.0) # Red Star on Tiara
-	mat_star.roughness = 0.2
+	mat_star.albedo_color = Color(0.95, 0.12, 0.2, 1.0)
 	
-	# Base / Boots (Red with gold trim)
+	# Boots (Red + Gold trim)
 	var base_mesh := CylinderMesh.new()
 	base_mesh.top_radius = 0.32
 	base_mesh.bottom_radius = 0.38
@@ -278,7 +376,7 @@ func _build_wonder_woman() -> void:
 	skirt_node.position = Vector3(0, 0.2, 0)
 	visuals.add_child(skirt_node)
 	
-	# Golden Belt
+	# Golden Belt & Lasso Coiled on Hip
 	var belt_mesh := CylinderMesh.new()
 	belt_mesh.top_radius = 0.26
 	belt_mesh.bottom_radius = 0.26
@@ -289,7 +387,18 @@ func _build_wonder_woman() -> void:
 	belt_node.position = Vector3(0, 0.28, 0)
 	visuals.add_child(belt_node)
 	
-	# Red Bodice / Torso
+	# Coiled Lasso of Truth
+	var lasso_mesh := TorusMesh.new()
+	lasso_mesh.inner_radius = 0.06
+	lasso_mesh.outer_radius = 0.1
+	var lasso_node := MeshInstance3D.new()
+	lasso_node.mesh = lasso_mesh
+	lasso_node.material_override = mat_gold
+	lasso_node.position = Vector3(0.24, 0.26, 0.05)
+	lasso_node.rotation_degrees = Vector3(90, 0, 0)
+	visuals.add_child(lasso_node)
+	
+	# Red Corset
 	var body_mesh := CylinderMesh.new()
 	body_mesh.top_radius = 0.27
 	body_mesh.bottom_radius = 0.24
@@ -300,7 +409,7 @@ func _build_wonder_woman() -> void:
 	body_node.position = Vector3(0, 0.38, 0)
 	visuals.add_child(body_node)
 	
-	# Golden Eagle 'W' Armor on Chest
+	# Golden Eagle Armor
 	var eagle_mesh := BoxMesh.new()
 	eagle_mesh.size = Vector3(0.26, 0.08, 0.05)
 	var eagle_node := MeshInstance3D.new()
@@ -309,7 +418,30 @@ func _build_wonder_woman() -> void:
 	eagle_node.position = Vector3(0, 0.44, 0.25)
 	visuals.add_child(eagle_node)
 	
-	# Head (Skin tone)
+	# Arms with Silver Bracelets of Submission
+	var arm_mesh := CylinderMesh.new()
+	arm_mesh.top_radius = 0.06
+	arm_mesh.bottom_radius = 0.06
+	arm_mesh.height = 0.26
+	for side in [-1.0, 1.0]:
+		var arm := MeshInstance3D.new()
+		arm.mesh = arm_mesh
+		arm.material_override = mat_skin
+		arm.position = Vector3(side * 0.32, 0.34, 0.02)
+		arm.rotation_degrees = Vector3(15, 0, side * -15)
+		visuals.add_child(arm)
+		
+		# Silver Gauntlet / Bracelet
+		var bracelet := MeshInstance3D.new()
+		bracelet.mesh = CylinderMesh.new()
+		(bracelet.mesh as CylinderMesh).top_radius = 0.075
+		(bracelet.mesh as CylinderMesh).bottom_radius = 0.075
+		(bracelet.mesh as CylinderMesh).height = 0.09
+		bracelet.material_override = mat_silver
+		bracelet.position = Vector3(side * 0.32, 0.22, 0.04)
+		visuals.add_child(bracelet)
+	
+	# Head
 	var head_mesh := SphereMesh.new()
 	head_mesh.radius = 0.24
 	head_mesh.height = 0.48
@@ -319,7 +451,7 @@ func _build_wonder_woman() -> void:
 	head_node.position = Vector3(0, 0.65, 0)
 	visuals.add_child(head_node)
 	
-	# Dark Flowing Hair
+	# Flowing Hair
 	var hair_mesh := SphereMesh.new()
 	hair_mesh.radius = 0.27
 	hair_mesh.height = 0.52
@@ -329,7 +461,7 @@ func _build_wonder_woman() -> void:
 	hair_node.position = Vector3(0, 0.66, -0.06)
 	visuals.add_child(hair_node)
 	
-	# Golden Amazonian Tiara across Forehead
+	# Golden Tiara with Red Star
 	var tiara_mesh := BoxMesh.new()
 	tiara_mesh.size = Vector3(0.3, 0.08, 0.12)
 	var tiara_node := MeshInstance3D.new()
@@ -338,7 +470,6 @@ func _build_wonder_woman() -> void:
 	tiara_node.position = Vector3(0, 0.72, 0.18)
 	visuals.add_child(tiara_node)
 	
-	# Red Star in the Center of the Tiara
 	var star_mesh := SphereMesh.new()
 	star_mesh.radius = 0.035
 	star_mesh.height = 0.07
@@ -369,6 +500,11 @@ func reset_to_start() -> void:
 	if visuals:
 		visuals.scale = Vector3.ONE
 		visuals.position = Vector3.ZERO
+		visuals.rotation_degrees = Vector3.ZERO
+	if power_particles:
+		power_particles.emitting = false
+	if power_light:
+		power_light.light_energy = 0.0
 	_start_idle_bobbing()
 
 func move_steps(steps: int) -> void:
@@ -379,13 +515,19 @@ func move_steps(steps: int) -> void:
 	if idle_tween:
 		idle_tween.kill()
 	
+	# Activate superpower VFX
+	if power_particles:
+		power_particles.emitting = true
+	if power_light:
+		var light_tween := create_tween()
+		light_tween.tween_property(power_light, "light_energy", 1.8, 0.2)
+	
 	var raw_target := current_cell + steps
 	var path: Array[int] = []
 	if raw_target <= 100:
 		for i in range(current_cell + 1, raw_target + 1):
 			path.append(i)
 	else:
-		# Overshoot bounce-back from cell 100
 		for i in range(current_cell + 1, 101):
 			path.append(i)
 		var bounced := 100 - (raw_target - 100)
@@ -401,41 +543,62 @@ func move_steps(steps: int) -> void:
 	var move_tween := create_tween()
 	move_tween.set_parallel(false)
 	
-	# Parabolic bouncy hop with squash-and-stretch
 	for cell_idx in path:
 		var target_pos := board.get_cell_position(cell_idx)
-		var hop_time := 0.22
+		var hop_time := 0.24
 		var step_tween := create_tween()
 		step_tween.set_parallel(true)
 		
-		# Horizontal move
+		# Move to tile coordinate
 		step_tween.tween_property(self, "global_position:x", target_pos.x, hop_time) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		step_tween.tween_property(self, "global_position:z", target_pos.z, hop_time) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		
-		# Vertical hop (jump high, land down)
-		var hop_y: float = target_pos.y + 0.65
-		var v_hop := create_tween()
-		v_hop.tween_property(self, "global_position:y", hop_y, hop_time * 0.45) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		v_hop.chain().tween_property(self, "global_position:y", target_pos.y + 0.35, hop_time * 0.55) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		# Superpower travel animations
+		match player_id:
+			1:
+				# Iron Man: Jet Propulsion Supersonic Flight
+				var hop_y: float = target_pos.y + 0.75
+				var v_hop := create_tween()
+				v_hop.tween_property(self, "global_position:y", hop_y, hop_time * 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+				v_hop.chain().tween_property(self, "global_position:y", target_pos.y + 0.35, hop_time * 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+				
+				# Aerodynamic forward flight pitch
+				var flight_pitch := create_tween()
+				flight_pitch.tween_property($Visuals, "rotation_degrees:x", -35.0, hop_time * 0.3).set_trans(Tween.TRANS_QUAD)
+				flight_pitch.chain().tween_property($Visuals, "rotation_degrees:x", 0.0, hop_time * 0.7).set_trans(Tween.TRANS_BACK)
+			2:
+				# Spider-Man: Web-Slinging Acrobatic Flip
+				var hop_y: float = target_pos.y + 0.95
+				var v_hop := create_tween()
+				v_hop.tween_property(self, "global_position:y", hop_y, hop_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+				v_hop.chain().tween_property(self, "global_position:y", target_pos.y + 0.35, hop_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+				
+				# Acrobatic 360 flip
+				var flip := create_tween()
+				flip.tween_property($Visuals, "rotation_degrees:x", 360.0, hop_time).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+			3:
+				# Wonder Woman: Divine Amazonian Leap & Lasso Aura Spin
+				var hop_y: float = target_pos.y + 0.85
+				var v_hop := create_tween()
+				v_hop.tween_property(self, "global_position:y", hop_y, hop_time * 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				v_hop.chain().tween_property(self, "global_position:y", target_pos.y + 0.35, hop_time * 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+				
+				# Graceful 360 pirouette spin
+				var spin := create_tween()
+				spin.tween_property($Visuals, "rotation_degrees:y", 360.0, hop_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 		
-		# Squash and Stretch during hop
+		# Squash and Stretch on impact
 		var squash_tween := create_tween()
-		squash_tween.tween_property($Visuals, "scale", Vector3(0.82, 1.25, 0.82), hop_time * 0.35) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		squash_tween.chain().tween_property($Visuals, "scale", Vector3(1.22, 0.78, 1.22), hop_time * 0.45) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		squash_tween.chain().tween_property($Visuals, "scale", Vector3(1.0, 1.0, 1.0), 0.08) \
-			.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		squash_tween.tween_property($Visuals, "scale", Vector3(0.85, 1.22, 0.85), hop_time * 0.4).set_trans(Tween.TRANS_QUAD)
+		squash_tween.chain().tween_property($Visuals, "scale", Vector3(1.2, 0.8, 1.2), hop_time * 0.45).set_trans(Tween.TRANS_QUAD)
+		squash_tween.chain().tween_property($Visuals, "scale", Vector3(1.0, 1.0, 1.0), 0.08).set_trans(Tween.TRANS_ELASTIC)
 		
 		move_tween.tween_interval(hop_time + 0.04)
 	
 	var landing_cell: int = path[-1]
 	
-	# Special tile handling: Rainbow Ladder or Snake
 	if SnLScript.connections.has(landing_cell):
 		var destination_cell: int = SnLScript.connections[landing_cell]
 		var is_ladder: bool = landing_cell < destination_cell
@@ -447,14 +610,14 @@ func move_steps(steps: int) -> void:
 		var dest_pos := board.get_cell_position(destination_cell)
 		
 		if is_ladder:
-			# Ascending bouncy superhero fly with 360 spin
-			move_tween.tween_property(self, "global_position", dest_pos + Vector3(0, 0.35, 0), 0.65) \
+			# High-speed superhero ascent with intense power aura
+			move_tween.tween_property(self, "global_position", dest_pos + Vector3(0, 0.35, 0), 0.7) \
 				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			move_tween.parallel().tween_property($Visuals, "rotation_degrees:y", 360.0, 0.65) \
+			move_tween.parallel().tween_property($Visuals, "rotation_degrees:y", 720.0, 0.7) \
 				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		else:
-			# Descending swooping snake slide
-			move_tween.tween_property(self, "global_position", dest_pos + Vector3(0, 0.35, 0), 0.75) \
+			# Descending swooping snake trap
+			move_tween.tween_property(self, "global_position", dest_pos + Vector3(0, 0.35, 0), 0.8) \
 				.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 		
 		landing_cell = destination_cell
@@ -464,8 +627,17 @@ func move_steps(steps: int) -> void:
 func _on_move_completed(final_cell: int) -> void:
 	current_cell = final_cell
 	is_moving = false
+	
 	if visuals:
 		visuals.rotation_degrees = Vector3.ZERO
 		visuals.scale = Vector3.ONE
+	
+	# Power down superpower VFX
+	if power_particles:
+		power_particles.emitting = false
+	if power_light:
+		var light_off := create_tween()
+		light_off.tween_property(power_light, "light_energy", 0.0, 0.3)
+	
 	_start_idle_bobbing()
 	move_finished.emit(player_id, final_cell)
