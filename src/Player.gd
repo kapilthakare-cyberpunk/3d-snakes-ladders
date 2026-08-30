@@ -268,8 +268,16 @@ func _build_spider_man() -> void:
 	torso.top_radius = 0.30; torso.bottom_radius = 0.24; torso.height = 0.30
 	_mesh_inst(torso, red, Vector3(0, 0.41, 0))
 
-	# Spider emblem (flat black disc)
-	_mesh_inst(SphereMesh.new(), black, Vector3(0, 0.46, 0.28), Vector3.ZERO, Vector3(1.3, 1.6, 0.25))
+	# Small spider emblem on chest
+	var spider_body := BoxMesh.new()
+	spider_body.size = Vector3(0.06, 0.08, 0.02)
+	_mesh_inst(spider_body, black, Vector3(0, 0.44, 0.29))
+	# Spider legs (4 tiny lines)
+	for side in [-1.0, 1.0]:
+		var leg_upper := BoxMesh.new(); leg_upper.size = Vector3(0.10, 0.015, 0.015)
+		_mesh_inst(leg_upper, black, Vector3(side * 0.06, 0.46, 0.29), Vector3(0, 0, side * 20))
+		var leg_lower := BoxMesh.new(); leg_lower.size = Vector3(0.10, 0.015, 0.015)
+		_mesh_inst(leg_lower, black, Vector3(side * 0.06, 0.42, 0.29), Vector3(0, 0, side * -20))
 
 	# Arms
 	var arm := CylinderMesh.new()

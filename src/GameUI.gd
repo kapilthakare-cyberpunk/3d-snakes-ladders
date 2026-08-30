@@ -28,11 +28,12 @@ func _ready() -> void:
 	victory_modal.visible = false
 	roll_button.pressed.connect(_on_roll_button_pressed)
 	play_again_button.pressed.connect(_on_play_again_pressed)
-	
-	_start_button_pulse()
-	
-	if Engine.has_singleton("GameController") or get_node_or_null("/root/GameController"):
-		var gc = get_node("/root/GameController")
+
+	# Initially disable rolling until players are configured
+	roll_button.disabled = true
+
+	var gc = get_node_or_null("/root/GameController")
+	if gc:
 		gc.turn_changed.connect(_on_turn_changed)
 		gc.roll_started.connect(_on_roll_started)
 		gc.dice_rolled.connect(_on_dice_rolled)
@@ -41,6 +42,16 @@ func _ready() -> void:
 		gc.log_message.connect(_on_log_message)
 		gc.game_won.connect(_on_game_won)
 		gc.game_restarted.connect(_on_game_restarted)
+		gc.players_configured.connect(_on_players_configured)
+
+func _on_players_configured(count: int) -> void:
+	# Show/hide player cards based on selected player count
+	if p1_card: p1_card.visible = count >= 1
+	if p2_card: p2_card.visible = count >= 2
+	if p3_card: p3_card.visible = count >= 3
+
+	roll_button.disabled = false
+	_start_button_pulse()
 
 func _start_button_pulse() -> void:
 	if pulse_tween:
@@ -56,28 +67,30 @@ func _on_roll_button_pressed() -> void:
 	click_pop.tween_property(roll_button, "scale", Vector2(0.92, 0.92), 0.06)
 	click_pop.chain().tween_property(roll_button, "scale", Vector2(1.0, 1.0), 0.12) \
 		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
-	
-	if Engine.has_singleton("GameController") or get_node_or_null("/root/GameController"):
-		get_node("/root/GameController").request_roll()
+
+	var gc = get_node_or_null("/root/GameController")
+	if gc:
+		gc.request_roll()
 
 func _on_play_again_pressed() -> void:
-	if Engine.has_singleton("GameController") or get_node_or_null("/root/GameController"):
-		get_node("/root/GameController").restart_game()
+	var gc = get_node_or_null("/root/GameController")
+	if gc:
+		gc.restart_game()
 
 func _on_turn_changed(player_id: int, current_cell: int) -> void:
 	roll_button.disabled = false
 	_start_button_pulse()
-	
+
 	var cards := [p1_card, p2_card, p3_card]
 	for i in range(cards.size()):
 		var card = cards[i]
-		if card:
+		if card and card.visible:
 			var t := create_tween()
 			if (i + 1) == player_id:
 				t.tween_property(card, "scale", Vector2(1.08, 1.08), 0.25).set_trans(Tween.TRANS_BACK)
 			else:
 				t.tween_property(card, "scale", Vector2(0.95, 0.95), 0.25)
-	
+
 	match player_id:
 		1:
 			turn_label.text = "🔴 IRON MAN'S TURN!"
@@ -117,7 +130,7 @@ func _on_special_tile_triggered(player_id: int, is_ladder: bool, from_cell: int,
 	var hero_name := "Iron Man"
 	if player_id == 2: hero_name = "Spider-Man"
 	elif player_id == 3: hero_name = "Wonder Woman"
-	
+
 	if is_ladder:
 		_show_popup_banner("🌈 POWER UP! %s FLEW UP A LADDER TO %d! 🚀" % [hero_name, to_cell], Color(0.3, 0.95, 0.55, 1.0))
 	else:
@@ -140,26 +153,26 @@ func _on_game_won(winner_id: int, game_stats: Dictionary) -> void:
 	roll_button.disabled = true
 	if pulse_tween:
 		pulse_tween.kill()
-	
+
 	var hero_name: String = str(game_stats.get("winner_name", "Superhero"))
 	victory_title.text = "🏆 %s WINS THE GAME! 🌟" % hero_name
-	
+
 	match winner_id:
 		1: victory_title.modulate = Color(1.0, 0.35, 0.35, 1.0)
 		2: victory_title.modulate = Color(0.3, 0.7, 1.0, 1.0)
 		3: victory_title.modulate = Color(1.0, 0.85, 0.3, 1.0)
-	
+
 	var turns: int = game_stats.get("total_turns", 0)
 	var p_stats: Dictionary = game_stats.get("player_stats", {})
 	var ladders: int = p_stats.get("ladders", 0)
 	var snakes: int = p_stats.get("snakes", 0)
 	var rolls: int = p_stats.get("rolls", 0)
-	
+
 	victory_stats.text = "🎉 Superhero Championship! 🎉\n\n⭐ Total Turns: %d\n🎲 Dice Rolls: %d\n🌈 Rainbow Ladders: %d\n🐍 Snake Traps: %d" % [turns, rolls, ladders, snakes]
-	
+
 	if confetti_particles:
 		confetti_particles.emitting = true
-	
+
 	var modal_box = $VictoryModal/CenterContainer/PanelContainer
 	modal_box.scale = Vector2(0.5, 0.5)
 	var win_pop := create_tween()

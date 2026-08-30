@@ -1,0 +1,124 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/PlayerSelect.gd" id="1_sel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.06, 0.08, 0.14, 0.92)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.12, 0.15, 0.24, 0.98)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.85, 0.2, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(1, 0.6, 0.12, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(1, 0.92, 0.6, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0.7, 0.3, 0, 0.5)
+shadow_size = 6
+shadow_offset = Vector2(0, 3)
+
+[node name="PlayerSelect" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_sel")
+
+[node name="Modal" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Modal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.06, 0.12, 0.88)
+
+[node name="CenterContainer" type="CenterContainer" parent="Modal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Modal/CenterContainer"]
+custom_minimum_size = Vector2(440, 400)
+layout_mode = 2
+pivot_offset = Vector2(220, 200)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="Modal/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="Modal/CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "🦸 How Many Heroes? 🦸"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Choose the number of players"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(0.75, 0.8, 0.9, 1)
+
+[node name="Spacer" type="Control" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="Btn1" type="Button" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+pivot_offset = Vector2(180, 29)
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_font_sizes/font_size = 22
+text = "🔴 1 Player — Iron Man Solo"
+
+[node name="Btn2" type="Button" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+pivot_offset = Vector2(180, 29)
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_font_sizes/font_size = 22
+text = "🔴🕷️ 2 Players — Iron Man vs Spidey"
+
+[node name="Btn3" type="Button" parent="Modal/CenterContainer/PanelContainer/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+pivot_offset = Vector2(180, 29)
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_font_sizes/font_size = 22
+text = "🔴🕷️⭐ 3 Players — All Heroes!"
