@@ -1,0 +1,14 @@
+[application]
+
+config/name = "3D Snakes & Ladders"
+config/project_settings_save_delay = 60
+bundle_identifier = "com.example.snakesladders"
+
+[autoload]
+
+SnLData = "res://singleton/SnLData.gd"
+GameController = "res://singleton/GameController.gd"
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc = true

@@ -1,0 +1,26 @@
+# Godot
+.import/
+.godot/
+.godot.export_template_paths
+
+# Build outputs
+build/
+*.app
+*.zip
+*.ipa
+*.apk
+*.pck
+
+# Export templates cache
+export_templates/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Poolside agent local config
+.poolside/
+
+# Secrets
+.env
+*.env

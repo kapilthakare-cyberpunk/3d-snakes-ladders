@@ -1,0 +1,57 @@
+name: build-macos
+
+# Mirrors the verified local export (Godot 4.7.2.stable), which produces a
+# valid macOS Apple Silicon .app. See project-specs.md §7 for the local
+# equivalent commands this workflow reproduces.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GODOT_VERSION: 4.7.2-stable   # GitHub release tag == editor + templates version
+
+jobs:
+  export:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Godot editor (macOS universal)
+        run: |
+          curl -L -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_macos.universal.zip"
+          unzip -o godot.zip -d godot-editor
+          echo "GODOT_BIN=$(pwd)/godot-editor/Godot.app/Contents/MacOS/Godot" >> "$GITHUB_ENV"
+
+      - name: Install export templates
+        run: |
+          tpl_tpz="Godot_v${{ env.GODOT_VERSION }}_export_templates.tpz"
+          curl -L -o "$tpl_tpz" \
+            "https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/$tpl_tpz"
+          # version.txt inside the tpz uses the dotted form, e.g. "4.7.2.stable"
+          VERSION="$(tar -xOf "$tpl_tpz" templates/version.txt | tr -d '[:space:]')"
+          tpl_dir="$HOME/Library/Application Support/Godot/export_templates/$VERSION"
+          mkdir -p "$tpl_dir"
+          tar -xzf "$tpl_tpz" -C "$tpl_dir" --strip-components=1
+          echo "Godot export templates $VERSION installed -> $tpl_dir"
+          cat "$tpl_dir/version.txt"
+
+      - name: Export release build (macOS / Apple Silicon)
+        run: |
+          mkdir -p build
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
+            --export-release "macOS" build/3d-snakes-ladders-macos.app
+
+      - name: Package as zip
+        run: |
+          ditto -c -k --keep-parent build/3d-snakes-ladders-macos.app 3d-snakes-ladders-macos.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 3d-snakes-ladders-macos
+          path: |
+            build/3d-snakes-ladders-macos.app
+            3d-snakes-ladders-macos.zip
