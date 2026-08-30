@@ -1,4 +1,4 @@
-@class_name DiceRoll
+class_name DiceRoll
 extends RefCounted         # stateless roller – lighter than a Node
 
 @export var dice_faces: int = 6

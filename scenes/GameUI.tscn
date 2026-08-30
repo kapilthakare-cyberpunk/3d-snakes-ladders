@@ -1,0 +1,245 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/GameUI.gd" id="1_game_ui"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
+bg_color = Color(0.08, 0.1, 0.14, 0.88)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p1"]
+bg_color = Color(0.8, 0.15, 0.22, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p2"]
+bg_color = Color(0.12, 0.55, 0.82, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bottom"]
+bg_color = Color(0.08, 0.1, 0.14, 0.88)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.09, 0.11, 0.16, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.98, 0.75, 0.15, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 16
+
+[node name="GameUI" type="CanvasLayer"]
+script = ExtResource("1_game_ui")
+
+[node name="TopBar" type="PanelContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 75.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_top")
+
+[node name="MarginContainer" type="MarginContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopBar/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🐍 3D Snakes & Ladders"
+vertical_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="TurnLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🎯 PLAYER 1'S TURN"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="P1Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_p1")
+
+[node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P1Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 4
+
+[node name="P1CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "P1: Cell 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="P2Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_p2")
+
+[node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P2Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 4
+
+[node name="P2CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "P2: Cell 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomPanel" type="PanelContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bottom")
+
+[node name="MarginContainer" type="MarginContainer" parent="BottomPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BottomPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LogBanner" type="PanelContainer" parent="BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LogLabel" type="Label" parent="BottomPanel/MarginContainer/VBoxContainer/LogBanner"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Game started! Player 1's turn to roll."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxControls" type="HBoxContainer" parent="BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RollResultBadge" type="PanelContainer" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls"]
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+
+[node name="RollResultLabel" type="Label" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls/RollResultBadge"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🎲 Ready"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RollButton" type="Button" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "🎲 ROLL DICE (Space)"
+
+[node name="VictoryModal" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="VictoryModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="PanelContainer" type="PanelContainer" parent="VictoryModal"]
+custom_minimum_size = Vector2(440, 320)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -160.0
+offset_right = 220.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="MarginContainer" type="MarginContainer" parent="VictoryModal/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VictoryModal/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="VictoryTitle" type="Label" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "🏆 PLAYER 1 WINS! 🏆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 16
+text = "Game Statistics:
+• Total Turns: 14
+• Ladders Climbed: 2
+• Snakes Bitten: 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayAgainButton" type="Button" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🔄 PLAY AGAIN"
