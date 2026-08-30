@@ -47,7 +47,7 @@ jobs:
 
       - name: Package as zip
         run: |
-          ditto -c -k --keep-parent build/3d-snakes-ladders-macos.app 3d-snakes-ladders-macos.zip
+          ditto -c -k build/3d-snakes-ladders-macos.app 3d-snakes-ladders-macos.zip
 
       - uses: actions/upload-artifact@v4
         with:

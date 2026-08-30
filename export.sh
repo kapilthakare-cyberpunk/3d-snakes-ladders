@@ -19,7 +19,7 @@ echo "▶️ Exporting release build for macOS (Apple Silicon)…"
 "$GODOT_BIN" --headless --path "$SCRIPT_DIR" --export-release "macOS" "$EXPORT_PATH"
 
 echo "▶️ Zipping app for distribution…"
-ditto -c -k --keep-parent "$EXPORT_PATH" "${EXPORT_NAME}.zip"
+ditto -c -k "$EXPORT_PATH" "${EXPORT_NAME}.zip"
 
 echo "✅ Build complete: ${EXPORT_NAME}.zip"
 ls -lh "${EXPORT_NAME}.zip"

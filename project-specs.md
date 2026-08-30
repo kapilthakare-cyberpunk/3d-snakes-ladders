@@ -377,7 +377,7 @@ echo "▶️ Exporting release build for macOS (Apple Silicon)…"
   --export-release "macOS" "$EXPORT_PATH"
 
 echo "▶️ Zipping app for distribution…"
-ditto -c -k --keep-parent "$EXPORT_PATH" "$EXPORT_NAME.zip"
+ditto -c -k "$EXPORT_PATH" "$EXPORT_NAME.zip"
 
 echo "✅ Build complete: $EXPORT_NAME.zip"
 ls -lh "$EXPORT_NAME.zip"
@@ -490,7 +490,7 @@ codesign/identity = ""
 
 ### 7.3 `export.sh` — one-click local export + zip
 
-See `export.sh` (executable). It locates Godot (`GODOT_BIN`, defaults to `godot` on `PATH`), runs the headless release export above, then `ditto -c -k --keep-parent` to produce a distributable `3d-snakes-ladders-macos.zip`.
+See `export.sh` (executable). It locates Godot (`GODOT_BIN`, defaults to `godot` on `PATH`), runs the headless release export above, then `ditto -c -k` to produce a distributable `3d-snakes-ladders-macos.zip`.
 
 ```bash
 ./export.sh   # → build/3d-snakes-ladders-macos.app + 3d-snakes-ladders-macos.zip
@@ -541,7 +541,7 @@ jobs:
 
       - name: Package
         run: |
-          ditto -c -k --keep-parent build/3d-snakes-ladders-macos.app 3d-snakes-ladders-macos.zip
+          ditto -c -k build/3d-snakes-ladders-macos.app 3d-snakes-ladders-macos.zip
 
       - uses: actions/upload-artifact@v4
         with:
