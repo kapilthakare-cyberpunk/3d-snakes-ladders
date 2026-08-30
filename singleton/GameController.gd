@@ -32,8 +32,16 @@ var stats: Dictionary = {
 }
 
 func _ready() -> void:
+	_setup_input_map()
 	dice = load("res://src/DiceRoll.gd").new()
 	_register_players.call_deferred()
+
+func _setup_input_map() -> void:
+	if not InputMap.has_action("roll_dice"):
+		InputMap.add_action("roll_dice", 0.2)
+		var key := InputEventKey.new()
+		key.physical_keycode = KEY_SPACE
+		InputMap.action_add_event("roll_dice", key)
 
 func _process(_delta: float) -> void:
 	if players.is_empty():
@@ -71,7 +79,8 @@ func _register_players() -> void:
 		log_message.emit("Game started! Player 1's turn to roll.", "info")
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("roll_dice"):
+	if (InputMap.has_action("roll_dice") and event.is_action_pressed("roll_dice")) or \
+	   (event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE)):
 		request_roll()
 
 func request_roll() -> void:
