@@ -1,32 +1,45 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/Player.gd" id="1_player"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_base"]
-top_radius = 0.3
-bottom_radius = 0.35
+top_radius = 0.32
+bottom_radius = 0.38
 height = 0.12
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
-top_radius = 0.16
-bottom_radius = 0.28
-height = 0.35
+[sub_resource type="SphereMesh" id="SphereMesh_body"]
+radius = 0.3
+height = 0.55
 
 [sub_resource type="SphereMesh" id="SphereMesh_head"]
-radius = 0.22
-height = 0.44
+radius = 0.26
+height = 0.52
+
+[sub_resource type="SphereMesh" id="SphereMesh_ear"]
+radius = 0.1
+height = 0.2
 
 [node name="PlayerToken" type="Node3D" groups=["players"]]
 script = ExtResource("1_player")
 
-[node name="Base" type="MeshInstance3D" parent="."]
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Visuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 mesh = SubResource("CylinderMesh_base")
 
-[node name="Body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0)
-mesh = SubResource("CylinderMesh_body")
+[node name="Body" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
+mesh = SubResource("SphereMesh_body")
 
-[node name="Head" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, 0)
+[node name="Head" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
 mesh = SubResource("SphereMesh_head")
+
+[node name="LeftEar" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.86, 0)
+mesh = SubResource("SphereMesh_ear")
+
+[node name="RightEar" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.86, 0)
+mesh = SubResource("SphereMesh_ear")

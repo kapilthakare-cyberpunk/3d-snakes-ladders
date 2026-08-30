@@ -1,48 +1,93 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://src/GameUI.gd" id="1_game_ui"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
-bg_color = Color(0.08, 0.1, 0.14, 0.88)
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 8
+bg_color = Color(0.12, 0.15, 0.22, 0.92)
+border_width_bottom = 4
+border_color = Color(1, 0.85, 0.3, 1)
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_turn"]
+bg_color = Color(0.18, 0.22, 0.32, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.85, 0.3, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p1"]
-bg_color = Color(0.8, 0.15, 0.22, 0.85)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p2"]
-bg_color = Color(0.12, 0.55, 0.82, 0.85)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bottom"]
-bg_color = Color(0.08, 0.1, 0.14, 0.88)
+bg_color = Color(1, 0.28, 0.38, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
-shadow_color = Color(0, 0, 0, 0.4)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p2"]
+bg_color = Color(0.15, 0.65, 1, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bottom"]
+bg_color = Color(0.12, 0.15, 0.22, 0.92)
+border_width_top = 4
+border_color = Color(1, 0.85, 0.3, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_roll_btn"]
+bg_color = Color(1, 0.62, 0.15, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 6
+border_color = Color(1, 0.92, 0.6, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+shadow_color = Color(0.8, 0.35, 0, 0.6)
 shadow_size = 8
+shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
-bg_color = Color(0.09, 0.11, 0.16, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.98, 0.75, 0.15, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 16
+bg_color = Color(0.12, 0.16, 0.25, 0.98)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 0.82, 0.2, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 24
 
 [node name="GameUI" type="CanvasLayer"]
 script = ExtResource("1_game_ui")
@@ -50,34 +95,45 @@ script = ExtResource("1_game_ui")
 [node name="TopBar" type="PanelContainer" parent="."]
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 75.0
+offset_bottom = 85.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_top")
 
 [node name="MarginContainer" type="MarginContainer" parent="TopBar"]
 layout_mode = 2
-theme_override_constants/margin_left = 24
+theme_override_constants/margin_left = 28
 theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 12
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TopBar/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 18
 
 [node name="TitleLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "🐍 3D Snakes & Ladders"
+theme_override_font_sizes/font_size = 22
+text = "🌈 Snakes & Ladders 🎲"
 vertical_alignment = 1
 
 [node name="VSeparator" type="VSeparator" parent="TopBar/MarginContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="TurnLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer"]
+[node name="TurnContainer" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_turn")
+
+[node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/TurnContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 6
+
+[node name="TurnLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/TurnContainer/Margin"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "🎯 PLAYER 1'S TURN"
+text = "🎯 TEDDY RED'S TURN!"
 vertical_alignment = 1
 
 [node name="Spacer" type="Control" parent="TopBar/MarginContainer/HBoxContainer"]
@@ -85,41 +141,65 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="P1Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(130, 0)
+custom_minimum_size = Vector2(165, 0)
 layout_mode = 2
+pivot_offset = Vector2(82, 26)
 theme_override_styles/panel = SubResource("StyleBoxFlat_p1")
 
 [node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P1Card"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 6
 
-[node name="P1CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card"]
+[node name="HBox" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "P1: Cell 1"
-horizontal_alignment = 1
+theme_override_constants/separation = 8
+
+[node name="P1NameLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "🐻 Teddy:"
+vertical_alignment = 1
+
+[node name="P1CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "Tile 1"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="P2Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(130, 0)
+custom_minimum_size = Vector2(165, 0)
 layout_mode = 2
+pivot_offset = Vector2(82, 26)
 theme_override_styles/panel = SubResource("StyleBoxFlat_p2")
 
 [node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P2Card"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 6
 
-[node name="P2CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card"]
+[node name="HBox" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "P2: Cell 1"
-horizontal_alignment = 1
+theme_override_constants/separation = 8
+
+[node name="P2NameLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "🐰 Bunny:"
+vertical_alignment = 1
+
+[node name="P2CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "Tile 1"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="BottomPanel" type="PanelContainer" parent="."]
@@ -127,53 +207,58 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -120.0
+offset_top = -140.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bottom")
 
 [node name="MarginContainer" type="MarginContainer" parent="BottomPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 18
 
 [node name="VBoxContainer" type="VBoxContainer" parent="BottomPanel/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
 [node name="LogBanner" type="PanelContainer" parent="BottomPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
+pivot_offset = Vector2(400, 16)
 
 [node name="LogLabel" type="Label" parent="BottomPanel/MarginContainer/VBoxContainer/LogBanner"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "Game started! Player 1's turn to roll."
+theme_override_font_sizes/font_size = 18
+text = "🌟 Game started! Click the big button or press SPACE to roll! 🌟"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="HBoxControls" type="HBoxContainer" parent="BottomPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
 [node name="RollResultBadge" type="PanelContainer" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls"]
-custom_minimum_size = Vector2(160, 48)
+custom_minimum_size = Vector2(210, 56)
 layout_mode = 2
+pivot_offset = Vector2(105, 28)
+theme_override_styles/panel = SubResource("StyleBoxFlat_turn")
 
 [node name="RollResultLabel" type="Label" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls/RollResultBadge"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "🎲 Ready"
+theme_override_font_sizes/font_size = 20
+text = "🎲 Ready!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RollButton" type="Button" parent="BottomPanel/MarginContainer/VBoxContainer/HBoxControls"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 20
-text = "🎲 ROLL DICE (Space)"
+pivot_offset = Vector2(300, 28)
+theme_override_styles/normal = SubResource("StyleBoxFlat_roll_btn")
+theme_override_font_sizes/font_size = 24
+text = "🎲 ROLL THE DICE! (Space) 🌟"
 
 [node name="VictoryModal" type="Control" parent="."]
 visible = false
@@ -191,55 +276,74 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.7)
+color = Color(0.05, 0.08, 0.14, 0.85)
 
-[node name="PanelContainer" type="PanelContainer" parent="VictoryModal"]
-custom_minimum_size = Vector2(440, 320)
+[node name="ConfettiParticles" type="CPUParticles2D" parent="VictoryModal"]
+position = Vector2(576, 20)
+emitting = false
+amount = 120
+lifetime = 3.5
+emission_shape = 3
+emission_rect_extents = Vector2(550, 10)
+direction = Vector2(0, 1)
+spread = 35.0
+gravity = Vector2(0, 95)
+initial_velocity_min = 60.0
+initial_velocity_max = 160.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+scale_amount_min = 8.0
+scale_amount_max = 16.0
+color = Color(1, 0.85, 0.2, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="VictoryModal"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -160.0
-offset_right = 220.0
-offset_bottom = 160.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="VictoryModal/CenterContainer"]
+custom_minimum_size = Vector2(480, 360)
+layout_mode = 2
+pivot_offset = Vector2(240, 180)
 theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
 
-[node name="MarginContainer" type="MarginContainer" parent="VictoryModal/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VictoryModal/CenterContainer/PanelContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 28
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 32
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VictoryModal/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VictoryModal/CenterContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 20
 
-[node name="VictoryTitle" type="Label" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="VictoryTitle" type="Label" parent="VictoryModal/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "🏆 PLAYER 1 WINS! 🏆"
+theme_override_font_sizes/font_size = 32
+text = "🏆 YAAAY! TEDDY WINS! 🌟"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="StatsLabel" type="Label" parent="VictoryModal/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 16
-text = "Game Statistics:
-• Total Turns: 14
-• Ladders Climbed: 2
-• Snakes Bitten: 1"
+theme_override_font_sizes/font_size = 18
+text = "🎉 Star Performance! 🎉
+
+⭐ Total Turns: 12
+🎲 Total Rolls: 12
+🌈 Rainbow Ladders: 2
+🐍 Snake Slides: 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlayAgainButton" type="Button" parent="VictoryModal/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
+[node name="PlayAgainButton" type="Button" parent="VictoryModal/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "🔄 PLAY AGAIN"
+theme_override_styles/normal = SubResource("StyleBoxFlat_roll_btn")
+theme_override_font_sizes/font_size = 24
+text = "🔄 PLAY AGAIN! 🎈"

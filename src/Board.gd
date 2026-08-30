@@ -34,7 +34,7 @@ func get_cell_position(idx: int, player_index: int = 0, total_players_on_cell: i
 		return base_pos
 	
 	# Side-by-side offset when multiple tokens share a tile
-	var offset_x: float = -0.4 if player_index == 0 else 0.4
+	var offset_x: float = -0.45 if player_index == 0 else 0.45
 	return base_pos + Vector3(offset_x, 0.0, 0.0)
 
 func create_visual_board() -> void:
@@ -42,46 +42,52 @@ func create_visual_board() -> void:
 	tiles_container.name = "TilesContainer"
 	add_child(tiles_container)
 	
-	# Materials for tiles
-	var mat_light := StandardMaterial3D.new()
-	mat_light.albedo_color = Color(0.92, 0.90, 0.86, 1.0) # Warm Ivory
-	mat_light.roughness = 0.4
+	# Cheerful Candy Materials
+	var mat_cream := StandardMaterial3D.new()
+	mat_cream.albedo_color = Color(1.0, 0.96, 0.88, 1.0) # Vanilla Cream
+	mat_cream.roughness = 0.35
 	
-	var mat_dark := StandardMaterial3D.new()
-	mat_dark.albedo_color = Color(0.24, 0.28, 0.36, 1.0) # Slate Navy
-	mat_dark.roughness = 0.4
+	var mat_mint := StandardMaterial3D.new()
+	mat_mint.albedo_color = Color(0.72, 0.94, 0.86, 1.0) # Pastel Mint
+	mat_mint.roughness = 0.35
 	
 	var mat_start := StandardMaterial3D.new()
-	mat_start.albedo_color = Color(0.18, 0.72, 0.45, 1.0) # Emerald Start
-	mat_start.roughness = 0.3
+	mat_start.albedo_color = Color(0.35, 0.88, 0.55, 1.0) # Vibrant Emerald Grass
+	mat_start.roughness = 0.25
 	mat_start.emission_enabled = true
-	mat_start.emission = Color(0.18, 0.72, 0.45, 1.0)
-	mat_start.emission_energy_multiplier = 0.3
+	mat_start.emission = Color(0.35, 0.88, 0.55, 1.0)
+	mat_start.emission_energy_multiplier = 0.35
 	
 	var mat_win := StandardMaterial3D.new()
-	mat_win.albedo_color = Color(0.98, 0.75, 0.15, 1.0) # Golden Finish
+	mat_win.albedo_color = Color(1.0, 0.82, 0.18, 1.0) # Bright Golden Trophy Tile
 	mat_win.roughness = 0.2
-	mat_win.metallic = 0.3
+	mat_win.metallic = 0.4
 	mat_win.emission_enabled = true
-	mat_win.emission = Color(0.98, 0.75, 0.15, 1.0)
-	mat_win.emission_energy_multiplier = 0.4
+	mat_win.emission = Color(1.0, 0.82, 0.18, 1.0)
+	mat_win.emission_energy_multiplier = 0.5
 	
 	var mat_ladder_base := StandardMaterial3D.new()
-	mat_ladder_base.albedo_color = Color(0.35, 0.65, 0.95, 1.0) # Sky Blue ladder marker
-	mat_ladder_base.roughness = 0.3
+	mat_ladder_base.albedo_color = Color(0.42, 0.76, 1.0, 1.0) # Cheerful Sky Blue
+	mat_ladder_base.roughness = 0.25
+	mat_ladder_base.emission_enabled = true
+	mat_ladder_base.emission = Color(0.42, 0.76, 1.0, 1.0)
+	mat_ladder_base.emission_energy_multiplier = 0.2
 	
 	var mat_snake_head := StandardMaterial3D.new()
-	mat_snake_head.albedo_color = Color(0.88, 0.28, 0.25, 1.0) # Crimson snake head marker
-	mat_snake_head.roughness = 0.3
+	mat_snake_head.albedo_color = Color(1.0, 0.45, 0.52, 1.0) # Pastel Coral/Pink Warning
+	mat_snake_head.roughness = 0.25
+	mat_snake_head.emission_enabled = true
+	mat_snake_head.emission = Color(1.0, 0.45, 0.52, 1.0)
+	mat_snake_head.emission_energy_multiplier = 0.2
 	
 	var tile_mesh := BoxMesh.new()
-	tile_mesh.size = Vector3(CELL_SIZE - 0.08, 0.15, CELL_SIZE - 0.08)
+	tile_mesh.size = Vector3(CELL_SIZE - 0.1, 0.18, CELL_SIZE - 0.1)
 	
 	for idx in range(1, BOARD_SIZE * BOARD_SIZE + 1):
 		var pos: Vector3 = cells[idx]
 		var tile := MeshInstance3D.new()
 		tile.mesh = tile_mesh
-		tile.position = pos + Vector3(0.0, -0.075, 0.0)
+		tile.position = pos + Vector3(0.0, -0.09, 0.0)
 		
 		# Select appropriate material
 		if idx == 1:
@@ -93,41 +99,45 @@ func create_visual_board() -> void:
 		elif SnLScript.is_snake_head(idx):
 			tile.material_override = mat_snake_head
 		elif (idx % 2 == 0):
-			tile.material_override = mat_light
+			tile.material_override = mat_cream
 		else:
-			tile.material_override = mat_dark
+			tile.material_override = mat_mint
 		
 		tiles_container.add_child(tile)
 		
-		# Add 3D cell number label
+		# Add Big Friendly 3D Cell Label
 		var label := Label3D.new()
-		label.text = str(idx)
 		if idx == 1:
-			label.text = "1\nSTART"
+			label.text = "⭐ START ⭐\n1"
 		elif idx == 100:
-			label.text = "100\n🏆 WIN"
+			label.text = "👑 WIN! 👑\n100"
+		elif SnLScript.is_ladder_base(idx):
+			label.text = "🌈 %d" % idx
+		elif SnLScript.is_snake_head(idx):
+			label.text = "🐍 %d" % idx
+		else:
+			label.text = str(idx)
 		
-		label.font_size = 32
-		label.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		label.font_size = 36
+		label.modulate = Color(0.12, 0.15, 0.22, 1.0) # Dark Charcoal text
 		label.outline_render_priority = 1
-		label.outline_modulate = Color(0.0, 0.0, 0.0, 0.9)
-		label.outline_size = 6
+		label.outline_modulate = Color(1.0, 1.0, 1.0, 1.0) # Clean White outline
+		label.outline_size = 8
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		label.position = pos + Vector3(0.0, 0.01, 0.0)
 		label.rotation_degrees = Vector3(-90.0, 0.0, 0.0) # Lay flat on tile facing up
 		tiles_container.add_child(label)
 	
-	# Board perimeter frame
+	# Warm Playground Border Frame (Playful Cherry/Teal Trim)
 	var border_mat := StandardMaterial3D.new()
-	border_mat.albedo_color = Color(0.12, 0.14, 0.18, 1.0) # Dark Ebony Wood frame
-	border_mat.roughness = 0.5
+	border_mat.albedo_color = Color(0.92, 0.42, 0.32, 1.0) # Warm Terracotta Coral Frame
+	border_mat.roughness = 0.4
 	
 	var total_span := float(BOARD_SIZE) * CELL_SIZE
-	var frame_thickness := 0.6
-	var frame_height := 0.25
+	var frame_thickness := 0.7
+	var frame_height := 0.28
 	
-	# Bottom & Top border beams
 	var h_mesh := BoxMesh.new()
 	h_mesh.size = Vector3(total_span + frame_thickness * 2.0, frame_height, frame_thickness)
 	
@@ -143,7 +153,6 @@ func create_visual_board() -> void:
 	border_n.position = Vector3(0.0, -frame_height * 0.5, total_span * 0.5 + frame_thickness * 0.5)
 	tiles_container.add_child(border_n)
 	
-	# Left & Right border beams
 	var v_mesh := BoxMesh.new()
 	v_mesh.size = Vector3(frame_thickness, frame_height, total_span)
 	
@@ -161,11 +170,11 @@ func create_visual_board() -> void:
 	
 	# Under-board base plate
 	var base_mesh := BoxMesh.new()
-	base_mesh.size = Vector3(total_span + frame_thickness * 2.0, 0.2, total_span + frame_thickness * 2.0)
+	base_mesh.size = Vector3(total_span + frame_thickness * 2.0, 0.25, total_span + frame_thickness * 2.0)
 	var base_plate := MeshInstance3D.new()
 	base_plate.mesh = base_mesh
 	base_plate.material_override = border_mat
-	base_plate.position = Vector3(0.0, -0.2, 0.0)
+	base_plate.position = Vector3(0.0, -0.22, 0.0)
 	tiles_container.add_child(base_plate)
 
 func place_snakes_and_ladders() -> void:
