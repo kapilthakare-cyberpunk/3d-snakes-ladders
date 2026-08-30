@@ -33,9 +33,14 @@ func get_cell_position(idx: int, player_index: int = 0, total_players_on_cell: i
 	if total_players_on_cell <= 1:
 		return base_pos
 	
-	# Side-by-side offset when multiple tokens share a tile
-	var offset_x: float = -0.45 if player_index == 0 else 0.45
-	return base_pos + Vector3(offset_x, 0.0, 0.0)
+	if total_players_on_cell == 2:
+		var offset_x: float = -0.45 if player_index == 0 else 0.45
+		return base_pos + Vector3(offset_x, 0.0, 0.0)
+	else:
+		var angles := [-90.0, 30.0, 150.0]
+		var angle_rad: float = deg_to_rad(angles[player_index % 3])
+		var radius := 0.48
+		return base_pos + Vector3(cos(angle_rad) * radius, 0.0, sin(angle_rad) * radius)
 
 func create_visual_board() -> void:
 	tiles_container = Node3D.new()

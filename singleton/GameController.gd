@@ -1,195 +1,190 @@
 extends Node
 
-## GameController - Central game manager & turn coordinator (AutoLoad)
-
+# State Machine
 enum GameState {
-	WAITING_FOR_ROLL,
-	ROLLING_DICE,
-	MOVING_TOKEN,
-	SPECIAL_MOVE,
+	IDLE,
+	ROLLING,
+	MOVING,
+	SPECIAL_EVENT,
+	TURN_END,
 	GAME_OVER
 }
 
+var current_state: GameState = GameState.IDLE
+var active_player_id: int = 1 # 1 = Iron Man, 2 = Spider-Man, 3 = Wonder Woman
+var is_game_active: bool = true
+var total_turns: int = 0
+
+# Player references registered at runtime
+var player_tokens: Dictionary = {}
+
+# Stats tracking for end game modal
+var stats: Dictionary = {
+	1: {"rolls": 0, "ladders": 0, "snakes": 0, "name": "Iron Man"},
+	2: {"rolls": 0, "ladders": 0, "snakes": 0, "name": "Spider-Man"},
+	3: {"rolls": 0, "ladders": 0, "snakes": 0, "name": "Wonder Woman"}
+}
+
+# Signals for UI and external systems
+signal state_changed(new_state: GameState)
 signal turn_changed(player_id: int, current_cell: int)
 signal roll_started(player_id: int)
 signal dice_rolled(player_id: int, steps: int)
-signal player_move_started(player_id: int, from_cell: int, to_cell: int)
-signal special_tile_triggered(player_id: int, is_ladder: bool, from_cell: int, to_cell: int)
 signal player_turn_finished(player_id: int, final_cell: int)
-signal game_won(player_id: int, stats: Dictionary)
+signal special_tile_triggered(player_id: int, is_ladder: bool, from_cell: int, to_cell: int)
+signal game_won(winner_player_id: int, game_stats: Dictionary)
 signal game_restarted()
 signal log_message(text: String, message_type: String)
 
-var current_state: GameState = GameState.WAITING_FOR_ROLL
-var players: Array = []
-var current_player_index: int = 0
-var dice = null
-
-var total_turns: int = 0
-var stats: Dictionary = {
-	1: {"rolls": 0, "ladders": 0, "snakes": 0},
-	2: {"rolls": 0, "ladders": 0, "snakes": 0}
-}
-
 func _ready() -> void:
 	_setup_input_map()
-	dice = load("res://src/DiceRoll.gd").new()
-	_register_players.call_deferred()
+	call_deferred("_register_players")
 
 func _setup_input_map() -> void:
 	if not InputMap.has_action("roll_dice"):
-		InputMap.add_action("roll_dice", 0.2)
-		var key := InputEventKey.new()
-		key.physical_keycode = KEY_SPACE
-		InputMap.action_add_event("roll_dice", key)
+		InputMap.add_action("roll_dice")
+		
+		# Space key
+		var ev_space := InputEventKey.new()
+		ev_space.physical_keycode = KEY_SPACE
+		InputMap.action_add_event("roll_dice", ev_space)
+		
+		# Enter key
+		var ev_enter := InputEventKey.new()
+		ev_enter.physical_keycode = KEY_ENTER
+		InputMap.action_add_event("roll_dice", ev_enter)
+		
+		# Left mouse button
+		var ev_mouse := InputEventMouseButton.new()
+		ev_mouse.button_index = MOUSE_BUTTON_LEFT
+		InputMap.action_add_event("roll_dice", ev_mouse)
 
-func _process(_delta: float) -> void:
-	if players.is_empty():
-		var found := get_tree().get_nodes_in_group("players")
-		if not found.is_empty():
-			_register_players()
-
-func _register_players() -> void:
-	var found := get_tree().get_nodes_in_group("players")
-	if found.is_empty():
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_game_active:
 		return
-	
-	players.clear()
-	# Sort players deterministically by player_id
-	found.sort_custom(func(a, b):
-		var id_a: int = a.player_id if "player_id" in a else 0
-		var id_b: int = b.player_id if "player_id" in b else 0
-		return id_a < id_b
-	)
-	
-	for i in range(found.size()):
-		var node = found[i]
-		if node.has_method("move_steps"):
-			players.append(node)
-			if not node.is_connected("move_finished", Callable(self, "_on_player_moved")):
-				node.connect("move_finished", Callable(self, "_on_player_moved"))
-			if not node.is_connected("special_triggered", Callable(self, "_on_player_special_triggered")):
-				node.connect("special_triggered", Callable(self, "_on_player_special_triggered"))
-			if node.has_method("setup_player"):
-				node.setup_player(i + 1)
-	
-	if not players.is_empty():
-		var active_player = players[current_player_index]
-		turn_changed.emit(active_player.player_id, active_player.current_cell)
-		log_message.emit("Game started! Player 1's turn to roll.", "info")
-
-func _input(event: InputEvent) -> void:
-	if (InputMap.has_action("roll_dice") and event.is_action_pressed("roll_dice")) or \
-	   (event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE)):
+	if event.is_action_pressed("roll_dice"):
 		request_roll()
 
+func _register_players() -> void:
+	player_tokens.clear()
+	var players = get_tree().get_nodes_in_group("players")
+	for p in players:
+		if p is Player:
+			player_tokens[p.player_id] = p
+			if not p.move_finished.is_connected(_on_player_moved):
+				p.move_finished.connect(_on_player_moved)
+			if not p.special_triggered.is_connected(_on_player_special_triggered):
+				p.special_triggered.connect(_on_player_special_triggered)
+	
+	active_player_id = 1
+	current_state = GameState.IDLE
+	state_changed.emit(current_state)
+	turn_changed.emit(active_player_id, get_active_player_cell())
+	log_message.emit("🌟 Superhero showdown started! 🔴 Iron Man's turn!", "info")
+
+func get_active_player_cell() -> int:
+	if player_tokens.has(active_player_id):
+		return player_tokens[active_player_id].current_cell
+	return 1
+
+func get_hero_name(p_id: int) -> String:
+	match p_id:
+		1: return "Iron Man"
+		2: return "Spider-Man"
+		3: return "Wonder Woman"
+		_: return "Player %d" % p_id
+
 func request_roll() -> void:
-	if current_state != GameState.WAITING_FOR_ROLL or players.is_empty():
+	if current_state != GameState.IDLE or not is_game_active:
 		return
 	
-	var player = players[current_player_index]
-	var p_id: int = player.player_id
-	current_state = GameState.ROLLING_DICE
+	_set_state(GameState.ROLLING)
+	roll_started.emit(active_player_id)
 	
-	var steps: int = dice.roll()
-	if not stats.has(p_id):
-		stats[p_id] = {"rolls": 0, "ladders": 0, "snakes": 0}
-	stats[p_id]["rolls"] += 1
+	stats[active_player_id]["rolls"] += 1
 	total_turns += 1
 	
-	roll_started.emit(p_id)
-	dice_rolled.emit(p_id, steps)
-	log_message.emit("Player %d rolled a %d!" % [p_id, steps], "roll")
+	# Roll dice value 1-6
+	var rolled_value := randi_range(1, 6)
 	
-	# Small delay before token movement to allow dice animation to be seen
-	var timer := get_tree().create_timer(0.6)
-	timer.timeout.connect(func():
-		if current_state == GameState.ROLLING_DICE:
-			_execute_player_move(player, steps)
+	log_message.emit("🎲 %s rolled a %d!" % [get_hero_name(active_player_id), rolled_value], "roll")
+	dice_rolled.emit(active_player_id, rolled_value)
+	
+	# Execute hop after short dice roll animation
+	get_tree().create_timer(0.7).timeout.connect(func():
+		_execute_move(rolled_value)
 	)
 
-func _execute_player_move(player, steps: int) -> void:
-	current_state = GameState.MOVING_TOKEN
-	var start_cell: int = player.current_cell
-	var target_cell: int = min(start_cell + steps, 100)
-	player_move_started.emit(player.player_id, start_cell, target_cell)
-	player.move_steps(steps)
-
-func _on_player_special_triggered(player_id: int, is_ladder: bool, from_cell: int, to_cell: int) -> void:
-	current_state = GameState.SPECIAL_MOVE
-	if is_ladder:
-		stats[player_id]["ladders"] += 1
-		log_message.emit("🚀 Player %d climbed a ladder from %d to %d!" % [player_id, from_cell, to_cell], "ladder")
+func _execute_move(steps: int) -> void:
+	_set_state(GameState.MOVING)
+	if player_tokens.has(active_player_id):
+		var p: Player = player_tokens[active_player_id]
+		p.move_steps(steps)
 	else:
-		stats[player_id]["snakes"] += 1
-		log_message.emit("🐍 Player %d bitten by a snake from %d down to %d!" % [player_id, from_cell, to_cell], "snake")
-	
-	special_tile_triggered.emit(player_id, is_ladder, from_cell, to_cell)
+		_end_turn()
 
-func _on_player_moved(player_id: int, final_cell: int) -> void:
-	player_turn_finished.emit(player_id, final_cell)
+func _on_player_moved(p_id: int, final_cell: int) -> void:
+	if p_id != active_player_id:
+		return
 	
-	# Update positions for all players to adjust any visual offsets
-	_update_all_token_offsets()
+	player_turn_finished.emit(p_id, final_cell)
 	
-	if final_cell >= 100:
-		current_state = GameState.GAME_OVER
-		log_message.emit("🎉 PLAYER %d WINS THE GAME! 🎉" % player_id, "win")
-		game_won.emit(player_id, {
+	if final_cell == 100:
+		_set_state(GameState.GAME_OVER)
+		is_game_active = false
+		var game_summary := {
+			"winner": active_player_id,
+			"winner_name": get_hero_name(active_player_id),
 			"total_turns": total_turns,
-			"player_stats": stats.get(player_id, {}),
-			"all_stats": stats
-		})
+			"player_stats": stats[active_player_id]
+		}
+		log_message.emit("🏆 %s reached tile 100 and WON THE GAME!" % get_hero_name(active_player_id), "win")
+		game_won.emit(active_player_id, game_summary)
 		return
 	
-	# Advance turn
-	current_player_index = (current_player_index + 1) % players.size()
-	current_state = GameState.WAITING_FOR_ROLL
-	var next_player = players[current_player_index]
-	turn_changed.emit(next_player.player_id, next_player.current_cell)
-	log_message.emit("Player %d's turn. Roll the dice!" % next_player.player_id, "turn")
+	_end_turn()
 
-func _update_all_token_offsets() -> void:
-	var board = get_tree().root.find_child("Board", true, false)
-	if not board or not board.has_method("get_cell_position"):
-		return
+func _on_player_special_triggered(p_id: int, is_ladder: bool, from_cell: int, to_cell: int) -> void:
+	if is_ladder:
+		stats[p_id]["ladders"] += 1
+		log_message.emit("🌈 %s powered up a ladder from %d to %d!" % [get_hero_name(p_id), from_cell, to_cell], "ladder")
+	else:
+		stats[p_id]["snakes"] += 1
+		log_message.emit("🐍 %s slid down a snake from %d to %d!" % [get_hero_name(p_id), from_cell, to_cell], "snake")
 	
-	# Group players by current cell
-	var cell_groups: Dictionary = {}
-	for player in players:
-		var cell: int = player.current_cell
-		if not cell_groups.has(cell):
-			cell_groups[cell] = []
-		cell_groups[cell].append(player)
+	special_tile_triggered.emit(p_id, is_ladder, from_cell, to_cell)
+
+func _end_turn() -> void:
+	_set_state(GameState.TURN_END)
 	
-	# Apply offsets for tokens sharing cells when they are not currently moving
-	for cell in cell_groups.keys():
-		var group: Array = cell_groups[cell]
-		for idx in range(group.size()):
-			var p = group[idx]
-			if not p.is_moving:
-				var pos: Vector3 = board.get_cell_position(cell, idx, group.size())
-				p.global_position = pos
+	# Rotate 3 players: 1 (Iron Man) -> 2 (Spider-Man) -> 3 (Wonder Woman) -> 1
+	var num_players: int = max(player_tokens.size(), 3)
+	active_player_id = (active_player_id % num_players) + 1
+	
+	get_tree().create_timer(0.35).timeout.connect(func():
+		_set_state(GameState.IDLE)
+		turn_changed.emit(active_player_id, get_active_player_cell())
+		log_message.emit("🎯 %s's turn! Roll the dice!" % get_hero_name(active_player_id), "turn")
+	)
 
 func restart_game() -> void:
 	total_turns = 0
-	stats = {
-		1: {"rolls": 0, "ladders": 0, "snakes": 0},
-		2: {"rolls": 0, "ladders": 0, "snakes": 0}
-	}
-	current_player_index = 0
-	current_state = GameState.WAITING_FOR_ROLL
+	for p_id in stats.keys():
+		stats[p_id]["rolls"] = 0
+		stats[p_id]["ladders"] = 0
+		stats[p_id]["snakes"] = 0
 	
-	var board = get_tree().root.find_child("Board", true, false)
-	for i in range(players.size()):
-		var p = players[i]
-		if p.has_method("reset_to_start"):
-			p.reset_to_start()
-		if board and board.has_method("get_cell_position"):
-			p.global_position = board.get_cell_position(1, i, players.size())
+	for p in player_tokens.values():
+		p.reset_to_start()
+		p.global_position = get_tree().root.find_child("Board", true, false).get_cell_position(1)
 	
+	active_player_id = 1
+	is_game_active = true
+	_set_state(GameState.IDLE)
 	game_restarted.emit()
-	if not players.is_empty():
-		var active_player = players[0]
-		turn_changed.emit(active_player.player_id, 1)
-		log_message.emit("Game reset! Player 1's turn.", "info")
+	turn_changed.emit(active_player_id, 1)
+	log_message.emit("🌟 New Superhero Game Started! 🔴 Iron Man's turn!", "info")
+
+func _set_state(new_state: GameState) -> void:
+	current_state = new_state
+	state_changed.emit(new_state)

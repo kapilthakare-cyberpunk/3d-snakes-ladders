@@ -1,9 +1,9 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://src/GameUI.gd" id="1_game_ui"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
-bg_color = Color(0.12, 0.15, 0.22, 0.92)
+bg_color = Color(0.1, 0.13, 0.2, 0.94)
 border_width_bottom = 4
 border_color = Color(1, 0.85, 0.3, 1)
 corner_radius_bottom_right = 24
@@ -12,7 +12,7 @@ shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_turn"]
-bg_color = Color(0.18, 0.22, 0.32, 0.9)
+bg_color = Color(0.16, 0.2, 0.3, 0.9)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -24,12 +24,12 @@ corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p1"]
-bg_color = Color(1, 0.28, 0.38, 0.95)
+bg_color = Color(0.85, 0.15, 0.18, 0.95)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(1, 1, 1, 1)
+border_color = Color(1, 0.85, 0.2, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -38,12 +38,26 @@ shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p2"]
-bg_color = Color(0.15, 0.65, 1, 0.95)
+bg_color = Color(0.12, 0.38, 0.88, 0.95)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(1, 1, 1, 1)
+border_color = Color(1, 0.2, 0.2, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p3"]
+bg_color = Color(0.88, 0.65, 0.12, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9, 0.15, 0.3, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -52,7 +66,7 @@ shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bottom"]
-bg_color = Color(0.12, 0.15, 0.22, 0.92)
+bg_color = Color(0.1, 0.13, 0.2, 0.94)
 border_width_top = 4
 border_color = Color(1, 0.85, 0.3, 1)
 corner_radius_top_left = 24
@@ -61,7 +75,7 @@ shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_roll_btn"]
-bg_color = Color(1, 0.62, 0.15, 1)
+bg_color = Color(1, 0.6, 0.12, 1)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -76,7 +90,7 @@ shadow_size = 8
 shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
-bg_color = Color(0.12, 0.16, 0.25, 0.98)
+bg_color = Color(0.1, 0.14, 0.22, 0.98)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -101,19 +115,19 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_top")
 
 [node name="MarginContainer" type="MarginContainer" parent="TopBar"]
 layout_mode = 2
-theme_override_constants/margin_left = 28
+theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 28
+theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 12
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TopBar/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 14
 
 [node name="TitleLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "🌈 Snakes & Ladders 🎲"
+theme_override_font_sizes/font_size = 20
+text = "🦸 Snakes & Ladders 🎲"
 vertical_alignment = 1
 
 [node name="VSeparator" type="VSeparator" parent="TopBar/MarginContainer/HBoxContainer"]
@@ -125,15 +139,15 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_turn")
 
 [node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/TurnContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
+theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 16
+theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 6
 
 [node name="TurnLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/TurnContainer/Margin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "🎯 TEDDY RED'S TURN!"
+theme_override_font_sizes/font_size = 19
+text = "🔴 IRON MAN'S TURN!"
 vertical_alignment = 1
 
 [node name="Spacer" type="Control" parent="TopBar/MarginContainer/HBoxContainer"]
@@ -141,63 +155,94 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="P1Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(165, 0)
+custom_minimum_size = Vector2(148, 0)
 layout_mode = 2
-pivot_offset = Vector2(82, 26)
+pivot_offset = Vector2(74, 26)
 theme_override_styles/panel = SubResource("StyleBoxFlat_p1")
 
 [node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P1Card"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
+theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 6
 
 [node name="HBox" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="P1NameLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin/HBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "🐻 Teddy:"
+theme_override_font_sizes/font_size = 15
+text = "🔴 Iron Man:"
 vertical_alignment = 1
 
 [node name="P1CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P1Card/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 15
 text = "Tile 1"
 horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="P2Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(165, 0)
+custom_minimum_size = Vector2(154, 0)
 layout_mode = 2
-pivot_offset = Vector2(82, 26)
+pivot_offset = Vector2(77, 26)
 theme_override_styles/panel = SubResource("StyleBoxFlat_p2")
 
 [node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P2Card"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
+theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 6
 
 [node name="HBox" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="P2NameLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin/HBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "🐰 Bunny:"
+theme_override_font_sizes/font_size = 15
+text = "🕷️ Spidey:"
 vertical_alignment = 1
 
 [node name="P2CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P2Card/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 15
+text = "Tile 1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="P3Card" type="PanelContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(165, 0)
+layout_mode = 2
+pivot_offset = Vector2(82, 26)
+theme_override_styles/panel = SubResource("StyleBoxFlat_p3")
+
+[node name="Margin" type="MarginContainer" parent="TopBar/MarginContainer/HBoxContainer/P3Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 6
+
+[node name="HBox" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/P3Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="P3NameLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P3Card/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "⭐ Wonder W:"
+vertical_alignment = 1
+
+[node name="P3CellLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/P3Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
 text = "Tile 1"
 horizontal_alignment = 2
 vertical_alignment = 1
@@ -230,7 +275,7 @@ pivot_offset = Vector2(400, 16)
 [node name="LogLabel" type="Label" parent="BottomPanel/MarginContainer/VBoxContainer/LogBanner"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "🌟 Game started! Click the big button or press SPACE to roll! 🌟"
+text = "🌟 Superhero showdown started! 🔴 Iron Man's turn!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -258,7 +303,7 @@ size_flags_horizontal = 3
 pivot_offset = Vector2(300, 28)
 theme_override_styles/normal = SubResource("StyleBoxFlat_roll_btn")
 theme_override_font_sizes/font_size = 24
-text = "🎲 ROLL THE DICE! (Space) 🌟"
+text = "🎲 ROLL SUPERHERO DICE! (Space) ⚡"
 
 [node name="VictoryModal" type="Control" parent="."]
 visible = false
@@ -276,12 +321,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.08, 0.14, 0.85)
+color = Color(0.04, 0.06, 0.12, 0.88)
 
 [node name="ConfettiParticles" type="CPUParticles2D" parent="VictoryModal"]
 position = Vector2(576, 20)
 emitting = false
-amount = 120
+amount = 130
 lifetime = 3.5
 emission_shape = 3
 emission_rect_extents = Vector2(550, 10)
@@ -323,8 +368,8 @@ theme_override_constants/separation = 20
 
 [node name="VictoryTitle" type="Label" parent="VictoryModal/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🏆 YAAAY! TEDDY WINS! 🌟"
+theme_override_font_sizes/font_size = 30
+text = "🏆 IRON MAN WINS! 🌟"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -332,12 +377,12 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 18
-text = "🎉 Star Performance! 🎉
+text = "🎉 Superhero Championship! 🎉
 
 ⭐ Total Turns: 12
-🎲 Total Rolls: 12
+🎲 Dice Rolls: 12
 🌈 Rainbow Ladders: 2
-🐍 Snake Slides: 1"
+🐍 Snake Traps: 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -346,4 +391,4 @@ custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_roll_btn")
 theme_override_font_sizes/font_size = 24
-text = "🔄 PLAY AGAIN! 🎈"
+text = "🔄 PLAY AGAIN! ⚡"
