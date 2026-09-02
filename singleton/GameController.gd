@@ -90,7 +90,6 @@ func _register_players() -> void:
 				if not p.special_triggered.is_connected(_on_player_special_triggered):
 					p.special_triggered.connect(_on_player_special_triggered)
 			else:
-				# Hide unused player tokens
 				p.visible = false
 
 	active_player_id = 1
@@ -103,6 +102,10 @@ func _register_players() -> void:
 	for i in range(1, num_players + 1):
 		hero_names.append(get_hero_name(i))
 	log_message.emit("🌟 %s — GAME ON! %s's turn!" % [" vs ".join(hero_names), get_hero_name(1)], "info")
+
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_bgm("gameplay", 1.2)
 
 func get_active_player_cell() -> int:
 	if player_tokens.has(active_player_id):
@@ -131,7 +134,10 @@ func request_roll() -> void:
 	log_message.emit("🎲 %s rolled a %d!" % [get_hero_name(active_player_id), rolled_value], "roll")
 	dice_rolled.emit(active_player_id, rolled_value)
 
-	# Wait for dice animation before moving
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(AudioManager.SFX.DICE_ROLL, 0.1)
+
 	get_tree().create_timer(0.9).timeout.connect(func():
 		_execute_move(rolled_value)
 	)
@@ -160,18 +166,27 @@ func _on_player_moved(p_id: int, final_cell: int) -> void:
 			"player_stats": stats[active_player_id]
 		}
 		log_message.emit("🏆 %s reached tile 100 and WON THE GAME!" % get_hero_name(active_player_id), "win")
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play_sfx(AudioManager.SFX.WIN_FANFARE, 0.0)
+			am.stop_bgm(1.5)
 		game_won.emit(active_player_id, game_summary)
 		return
 
 	_end_turn()
 
 func _on_player_special_triggered(p_id: int, is_ladder: bool, from_cell: int, to_cell: int) -> void:
+	var am = get_node_or_null("/root/AudioManager")
 	if is_ladder:
 		stats[p_id]["ladders"] += 1
 		log_message.emit("🌈 %s powered up a ladder from %d to %d!" % [get_hero_name(p_id), from_cell, to_cell], "ladder")
+		if am:
+			am.play_sfx(AudioManager.SFX.LADDER_WHOOSH, 0.1)
 	else:
 		stats[p_id]["snakes"] += 1
 		log_message.emit("🐍 %s slid down a snake from %d to %d!" % [get_hero_name(p_id), from_cell, to_cell], "snake")
+		if am:
+			am.play_sfx(AudioManager.SFX.SNAKE_SLIDE, 0.1)
 
 	special_tile_triggered.emit(p_id, is_ladder, from_cell, to_cell)
 
@@ -204,6 +219,10 @@ func restart_game() -> void:
 	game_restarted.emit()
 	turn_changed.emit(active_player_id, 1)
 	log_message.emit("🌟 New Game! %s's turn!" % get_hero_name(1), "info")
+
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_bgm("gameplay", 1.0)
 
 func _set_state(new_state: GameState) -> void:
 	current_state = new_state

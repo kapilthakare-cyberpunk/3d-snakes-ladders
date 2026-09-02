@@ -21,10 +21,22 @@ background_mode = 2
 sky = SubResource("Sky_main")
 ambient_light_source = 3
 ambient_light_color = Color(0.85, 0.9, 0.95, 1)
-ambient_light_energy = 0.55
+ambient_light_energy = 0.6
 tonemap_mode = 2
 glow_enabled = true
-glow_intensity = 0.15
+glow_intensity = 0.18
+glow_bloom = 0.15
+ssao_enabled = true
+ssao_radius = 1.8
+ssao_intensity = 0.6
+ssao_light_affect = 0.5
+ssao_ao_channel_affect = 0.8
+ssao_detail = 1.5
+ssao_sharpness = 1.2
+fog_enabled = true
+fog_light_color = Color(0.85, 0.9, 0.95, 1)
+fog_density = 0.00025
+fog_sky_affect = 0.4
 
 [node name="Board" type="Node3D"]
 script = ExtResource("1_board")
@@ -53,9 +65,15 @@ script = ExtResource("5_cam")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 8, 22, 10)
 light_color = Color(1, 0.98, 0.95, 1)
-light_energy = 0.95
+light_energy = 1.05
 shadow_enabled = true
-directional_shadow_max_distance = 60.0
+directional_shadow_mode = 2
+directional_shadow_split_index = 0.95
+directional_shadow_blend_splits = true
+directional_shadow_normal_bias = 0.6
+directional_shadow_bias = 0.15
+directional_shadow_max_distance = 70.0
+directional_shadow_tex_size = 4096
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")

@@ -82,7 +82,7 @@ func create_visual_board() -> void:
 	mat_win.emission_energy_multiplier = 0.4
 
 	var tile_mesh := BoxMesh.new()
-	tile_mesh.size = Vector3(CELL_SIZE - 0.06, 0.20, CELL_SIZE - 0.06)
+	tile_mesh.size = Vector3(CELL_SIZE - 0.12, 0.22, CELL_SIZE - 0.12)
 
 	for idx in range(1, BOARD_SIZE * BOARD_SIZE + 1):
 		var pos: Vector3 = cells[idx]

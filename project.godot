@@ -20,6 +20,7 @@ bundle_identifier="com.example.snakesladders"
 
 SnLData="res://singleton/SnLData.gd"
 GameController="res://singleton/GameController.gd"
+AudioManager="res://singleton/AudioManager.gd"
 
 [rendering]
 

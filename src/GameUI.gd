@@ -15,6 +15,7 @@ extends CanvasLayer
 @onready var roll_result_label: Label = $BottomPanel/MarginContainer/VBoxContainer/HBoxControls/RollResultBadge/RollResultLabel
 @onready var log_banner: PanelContainer = $BottomPanel/MarginContainer/VBoxContainer/LogBanner
 @onready var log_label: Label = $BottomPanel/MarginContainer/VBoxContainer/LogBanner/LogLabel
+@onready var volume_button: Button = $TopBar/MarginContainer/HBoxContainer/VolumeButton
 
 @onready var victory_modal: Control = $VictoryModal
 @onready var victory_title: Label = $VictoryModal/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VictoryTitle
@@ -28,6 +29,8 @@ func _ready() -> void:
 	victory_modal.visible = false
 	roll_button.pressed.connect(_on_roll_button_pressed)
 	play_again_button.pressed.connect(_on_play_again_pressed)
+	if volume_button:
+		volume_button.pressed.connect(_toggle_volume)
 
 	# Initially disable rolling until players are configured
 	roll_button.disabled = true
@@ -63,6 +66,9 @@ func _start_button_pulse() -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _on_roll_button_pressed() -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(AudioManager.SFX.BUTTON_CLICK, 0.1)
 	var click_pop := create_tween()
 	click_pop.tween_property(roll_button, "scale", Vector2(0.92, 0.92), 0.06)
 	click_pop.chain().tween_property(roll_button, "scale", Vector2(1.0, 1.0), 0.12) \
@@ -73,9 +79,18 @@ func _on_roll_button_pressed() -> void:
 		gc.request_roll()
 
 func _on_play_again_pressed() -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_sfx(AudioManager.SFX.BUTTON_CLICK, 0.1)
 	var gc = get_node_or_null("/root/GameController")
 	if gc:
 		gc.restart_game()
+
+func _toggle_volume() -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.toggle_mute()
+		volume_button.text = "🔊" if not am.is_muted else "🔇"
 
 func _on_turn_changed(player_id: int, current_cell: int) -> void:
 	roll_button.disabled = false
